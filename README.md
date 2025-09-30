@@ -19,6 +19,29 @@ Al ganar, el juego celebra con el mensaje especial: **"Feliz día Hotwheels"**. 
 
 ---
 
+## 🚀 Instalación y uso
+
+Clona el repositorio:
+```bash
+git clone https://github.com/TU_USUARIO/hotwheels-race.git
+cd hotwheels-race
+```
+Abre un servidor local para probar:
+
+Con Python:
+```bash
+python -m http.server 5500
+```
+
+Con Node.js:
+```bash
+npx http-server -p 5500
+```
+
+Abre en tu navegador:
+👉 http://localhost:5500
+
+---
 ## 📂 Estructura del proyecto
 
 ```bash
@@ -48,3 +71,12 @@ hotwheels-race/
 │       ├─ race-loop.ogg
 │       ├─ beep.ogg
 │       └─ shot-start.ogg
+
+```
+## 🎨 Créditos y recursos
+
+- Sonidos: Mixkit, Pixabay SFX y Google Actions.
+
+- Imágenes: Unsplash y Pexels.
+
+- Fuentes: Google Fonts, Orbitron.
