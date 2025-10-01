@@ -1,48 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Hotwheels Arcade Race</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hotwheels — Arcade Pro</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Pantalla de bienvenida -->
-  <div id="intro" class="screen active">
-    <h1>🎉 Feliz día Hotwheels 🎉</h1>
-    <p>¿Quieres continuar para competir?</p>
-    <div class="btn-group">
-      <button id="btn-yes">Sí</button>
-      <button id="btn-no">No</button>
+  <!-- INTRO cinematic -->
+  <div id="intro" class="overlay">
+    <div class="intro-card">
+      <h1 class="intro-title">¡Feliz día Hotwheels!</h1>
+      <p class="intro-sub">¿Quieres continuar para competir?</p>
+      <div class="intro-actions">
+        <button id="introYes" class="btn primary">✅ Sí, continuar</button>
+        <button id="introNo" class="btn ghost">❌ No, gracias</button>
+      </div>
+      <small class="intro-hint">Si pulsas NO, la pantalla permanecerá inactiva hasta que confirmes.</small>
     </div>
   </div>
 
-  <!-- Menú principal -->
-  <div id="menu" class="screen">
-    <h2>🏎️ Menú Principal</h2>
-    <ul>
-      <li><button data-action="play">Jugar</button></li>
-      <li><button data-action="demo">Demo</button></li>
-      <li><button data-action="rules">Reglas</button></li>
-      <li><button data-action="records">Récords</button></li>
-      <li><button data-action="config">Configuración</button></li>
-    </ul>
-  </div>
+  <!-- LEGO assembly holder -->
+  <div id="legoWrap" class="lego-wrap" aria-hidden="true"></div>
 
-  <!-- Selección de coches -->
-  <div id="car-select" class="screen">
-    <h2>Selecciona tu coche</h2>
-    <div class="carousel">
-      <button class="arrow left">⬅️</button>
-      <img id="selected-car" src="assets/images/cars/car1.png" alt="Carro">
-      <button class="arrow right">➡️</button>
+  <!-- MAIN MENU -->
+  <div id="mainMenu" class="overlay hidden">
+    <div class="menu-panel">
+      <div class="menu-head">
+        <h2>Menú Principal</h2>
+        <p class="muted">Selecciona una opción</p>
+      </div>
+
+      <div class="menu-grid">
+        <div id="menu_play" class="menu-card">🏎️<span>Jugar</span></div>
+        <div id="menu_select" class="menu-card">🚗<span>Seleccionar coche</span></div>
+        <div id="menu_records" class="menu-card">🏆<span>Récords</span></div>
+        <div id="menu_config" class="menu-card">⚙️<span>Configuración</span></div>
+        <div id="menu_demo" class="menu-card">🎓<span>Demo / Cómo jugar</span></div>
+        <div id="menu_rules" class="menu-card">📜<span>Reglas</span></div>
+      </div>
+
+      <div class="menu-foot">
+        <button id="menuClose" class="btn ghost">Cerrar</button>
+      </div>
     </div>
-    <button id="start-race">¡Jugar ya!</button>
   </div>
 
-  <!-- Juego -->
-  <canvas id="gameCanvas" class="screen"></canvas>
+  <!-- SELECT CAR overlay -->
+  <div id="selectOverlay" class="overlay hidden">
+    <div class="select-panel">
+      <h3>Selecciona tu coche de lujo</h3>
+      <div id="carousel" class="carousel">
+        <button id="carouselLeft" class="arrow">◀</button>
+        <div id="carouselTrack" class="carousel-track"></div>
+        <button id="carouselRight" class="arrow">▶</button>
+      </div>
+      <div class="select-actions">
+        <button id="selectPlay" class="btn primary">🚀 ¡Jugar ya!</button>
+        <button id="closeSelect" class="btn ghost">Volver</button>
+      </div>
+    </div>
+  </div>
 
-  <!-- Scripts -->
-  <script src="js/game.js"></script>
+  <!-- RECORDS overlay -->
+  <div id="recordsOverlay" class="overlay hidden">
+    <div class="box">
+      <h3>Récords</h3>
+      <ol id="recordsList"></ol>
+      <div class="records-actions">
+        <button id="clearRecords" class="btn ghost">Borrar récords</button>
+        <button id="closeRecords" class="btn ghost">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIG overlay -->
+  <div id="configOverlay" class="overlay hidden">
+    <div class="box">
+      <h3>Configuración</h3>
+      <div class="config-row">
+        <label><input id="toggleMusic" type="checkbox"> Música</label>
+      </div>
+      <div class="config-row">
+        <label><input id="toggleSfx" type="checkbox"> Efectos (SFX)</label>
+      </div>
+      <div class="config-row">
+        <label>Volumen: <input id="volumeRange" type="range" min="0" max="1" step="0.01" value="0.8"></label>
+      </div>
+      <div style="margin-top:12px">
+        <button id="closeConfig" class="btn ghost">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEMO / Tutorial overlay -->
+  <div id="demoOverlay" class="overlay hidden">
+    <div class="box tutorial">
+      <h3>Demo — Cómo jugar</h3>
+      <ol id="tutorialSteps" class="tutorial-steps">
+        <li>1) Selecciona un coche desde el carrusel.</li>
+        <li>2) Toca Jugar ya para comenzar.</li>
+        <li>3) Usa las flechas ← → para moverte o los botones táctiles en móvil.</li>
+        <li>4) Evita los obstáculos y cruza la meta primero.</li>
+      </ol>
+      <div style="margin-top:12px">
+        <button id="playDemo" class="btn primary">Reproducir demo</button>
+        <button id="closeDemo" class="btn ghost">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RULES overlay -->
+  <div id="rulesOverlay" class="overlay hidden">
+    <div class="box">
+      <h3>Reglas</h3>
+      <p class="muted">Evita obstáculos. Cruza la meta en primer lugar. Si ganas, desbloquearás el siguiente nivel.</p>
+      <div style="margin-top:12px"><button id="closeRules" class="btn ghost">Cerrar</button></div>
+    </div>
+  </div>
+
+  <!-- COUNTDOWN overlay -->
+  <div id="countdown" class="overlay hidden">
+    <div class="count-box">
+      <div id="countNum" class="count-num">3</div>
+      <div class="muted">Preparados...</div>
+    </div>
+  </div>
+
+  <!-- FINISH overlay -->
+  <div id="finishOverlay" class="overlay hidden">
+    <div class="finish-panel">
+      <h2 id="finishTitle">🏆 ¡Felicidades!</h2>
+      <p id="finishText">Feliz día Hotwheels, campeón</p>
+      <div style="margin-top:12px">
+        <button id="finishReplay" class="btn primary">Jugar otra vez</button>
+        <button id="finishContinue" class="btn ghost">Siguiente nivel</button>
+        <button id="finishMenu" class="btn ghost">Volver al menú</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME area -->
+  <main class="game-area">
+    <div class="topbar">
+      <div class="brand">Hotwheels — Arcade Pro</div>
+      <div class="top-controls">
+        <div id="levelLabel" class="muted">Nivel 1</div>
+        <button id="openMenu" class="btn ghost">☰</button>
+      </div>
+    </div>
+
+    <div id="canvasWrap" class="canvas-wrap">
+      <canvas id="gameCanvas" width="1200" height="680"></canvas>
+
+      <!-- on-screen mobile buttons -->
+      <div class="touch-controls">
+        <button id="touchLeft" class="touch-btn">◀</button>
+        <button id="touchRight" class="touch-btn">▶</button>
+      </div>
+    </div>
+
+    <div class="hud">
+      <div id="posInfo" class="hud-item">Posición: -</div>
+      <div id="lapInfo" class="hud-item">Distancia: 0%</div>
+      <div id="timeInfo" class="hud-item">Tiempo: 0.00s</div>
+    </div>
+
+    <footer class="muted small">Controles: Flechas ← → | En móvil toca el lado izquierdo/derecho | Música y SFX en Configuración</footer>
+  </main>
+
+  <!-- Audio placeholders (royalty-free or actions URLs). Replace by local /assets/sounds/* in production. -->
+  <audio id="audio_intro" src="https://assets.mixkit.co/sfx/preview/mixkit-epic-cinematic-start-2752.mp3"></audio>
+  <audio id="audio_beep" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+  <audio id="audio_shot" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+  <audio id="audio_crash" src="https://actions.google.com/sounds/v1/impacts/crash.ogg"></audio>
+  <audio id="audio_race" loop src="https://assets.mixkit.co/music/preview/mixkit-arcade-retro-game-2133.mp3"></audio>
+  <audio id="audio_eng_a" loop src="https://actions.google.com/sounds/v1/transportation/car_engine.ogg"></audio>
+  <audio id="audio_eng_b" loop src="https://actions.google.com/sounds/v1/transportation/sports_car_accelerating.ogg"></audio>
+  <audio id="audio_eng_c" loop src="https://actions.google.com/sounds/v1/transportation/car_accelerate.ogg"></audio>
+  <audio id="audio_win" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+
+  <!-- Main JS -->
+  <script defer src="js/game.js"></script>
 </body>
 </html>
