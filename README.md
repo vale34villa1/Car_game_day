@@ -30,18 +30,29 @@ Abre un servidor local para probar:
 
 Con Python:
 ```bash
-python -m http.server 5500
+python -m http.server xxxx
 ```
 
 Con Node.js:
 ```bash
-npx http-server -p 5500
+npx http-server -p xxxx
 ```
 
 Abre en tu navegador:
-👉 http://localhost:5500
+👉 http://localhost:xxxx
 
 ---
+
+## 🛠️ Tecnologías usadas
+
+- HTML5 (estructura y canvas del juego)
+
+- CSS3 (efectos neón, IU/UX arcade, animaciones)
+
+- JavaScript (ES6) (motor del juego, IA rival, almacenamiento de récords)
+
+---
+
 ## 📂 Estructura del proyecto
 
 ```bash
