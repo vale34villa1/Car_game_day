@@ -7,12 +7,10 @@
 
   <!-- Arcade fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
-
-  <!-- Styles -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- NEON BACKGROUND / VFX -->
+  <!-- NEON BACKDROP -->
   <div id="neon-bg" aria-hidden="true"></div>
 
   <!-- INTRO SCREEN -->
@@ -32,18 +30,18 @@
     </div>
   </main>
 
-  <!-- LEGO / CINEMATIC (assembly + smash) -->
+  <!-- LEGO / CINEMATIC -->
   <div id="lego-wrap" class="overlay hidden" aria-hidden="true">
     <div id="lego-assembly" class="lego-assembly" aria-hidden="true"></div>
   </div>
 
-  <!-- MAIN MENU -->
+  <!-- MENU -->
   <section id="screen-menu" class="screen hidden">
     <div class="menu-card card">
       <div class="menu-title">HOTWHEELS — ARCADE PRO</div>
       <div class="menu-grid">
         <button id="menu_play" class="menu-btn">🎮 Jugar</button>
-        <button id="menu_select" class="menu-btn">🚗 Seleccionar coche</button>
+        <button id="menu_select" class="menu-btn">🚗 Seleccionar</button>
         <button id="menu_records" class="menu-btn">🏆 Récords</button>
         <button id="menu_config" class="menu-btn">⚙️ Config</button>
         <button id="menu_demo" class="menu-btn">🎬 Demo</button>
@@ -53,7 +51,7 @@
     </div>
   </section>
 
-  <!-- SELECT CAR -->
+  <!-- SELECT -->
   <section id="screen-select" class="screen hidden">
     <div class="select-card card">
       <h3>Selecciona tu coche de lujo</h3>
@@ -103,10 +101,10 @@
     <div class="card small-card">
       <h3>Demo — Cómo jugar</h3>
       <ol class="muted">
-        <li>Selecciona tu coche en el carrusel.</li>
-        <li>Pulsa <strong>¡Jugar ya!</strong> y espera la cuenta regresiva.</li>
-        <li>Usa las teclas ← → o toca los botones en pantalla para moverte.</li>
-        <li>Evita obstáculos y llega primero.</li>
+        <li>Selecciona tu coche.</li>
+        <li>Pulsa <strong>¡Jugar ya!</strong>.</li>
+        <li>Usa las teclas ← → o toca en móvil.</li>
+        <li>Evita obstáculos y cruza la meta.</li>
       </ol>
       <div class="row">
         <button id="btn-demo-start" class="btn primary">Reproducir demo</button>
@@ -119,14 +117,14 @@
   <section id="screen-rules" class="screen hidden">
     <div class="card small-card">
       <h3>Reglas</h3>
-      <p class="muted">Evita los conos y obstáculos, cruza la línea de meta en primer lugar para ganar y desbloquear el siguiente nivel.</p>
+      <p class="muted">Evita los conos y obstáculos, cruza la meta en primer lugar para ganar y desbloquear el siguiente nivel.</p>
       <div class="row">
         <button id="closeRules" class="btn primary">Cerrar</button>
       </div>
     </div>
   </section>
 
-  <!-- COUNTDOWN overlay -->
+  <!-- COUNTDOWN -->
   <div id="overlay-count" class="overlay hidden">
     <div class="count-box card">
       <div id="countNum" class="count-num">3</div>
@@ -134,7 +132,7 @@
     </div>
   </div>
 
-  <!-- FINISH overlay -->
+  <!-- FINISH -->
   <div id="overlay-finish" class="overlay hidden">
     <div class="finish-box card">
       <h2 id="finishTitle">🏁 Carrera terminada</h2>
@@ -174,7 +172,7 @@
     </div>
   </main>
 
-  <!-- Audio placeholders (replace with local assets in /assets/sounds) -->
+  <!-- Audio placeholders (replace with local assets for production) -->
   <audio id="audio_intro" src="https://assets.mixkit.co/sfx/preview/mixkit-epic-cinematic-start-2752.mp3"></audio>
   <audio id="audio_beep" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
   <audio id="audio_shot" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
@@ -185,7 +183,6 @@
   <audio id="audio_eng_c" loop src="https://actions.google.com/sounds/v1/transportation/car_accelerate.ogg"></audio>
   <audio id="audio_win" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
 
-  <!-- Main script -->
   <script src="game.js"></script>
 </body>
 </html>
