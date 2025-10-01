@@ -1,5 +1,4 @@
-/* style.css - Arcade UI/UX high-level */
-
+/* Arcade UI / UX High Design */
 :root{
   --bg-1: #02060a;
   --bg-2: #071427;
@@ -8,24 +7,23 @@
   --glass: rgba(255,255,255,0.03);
   --muted: #9fb0c8;
   --accent: #00e5ff;
-  --card-bg: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  --radius: 14px;
+  --card-radius: 14px;
 }
 
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;background:radial-gradient(circle at 10% 10%, rgba(0,200,255,0.03), transparent), linear-gradient(180deg,var(--bg-1),var(--bg-2));font-family: 'Orbitron', system-ui, sans-serif;color:#eaf6ff;-webkit-font-smoothing:antialiased}
 #neon-bg{position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(circle at 20% 15%, rgba(255,77,77,0.03), transparent), radial-gradient(circle at 80% 85%, rgba(255,216,77,0.02), transparent);filter:blur(20px);z-index:0}
 
-/* screens/cards */
+/* screen + card */
 .screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}
 .hidden{display:none}
-.card{background:var(--card-bg);padding:18px;border-radius:var(--radius);border:1px solid rgba(255,255,255,0.04);box-shadow:0 18px 50px rgba(0,0,0,0.6);backdrop-filter: blur(6px)}
+.card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:var(--card-radius);border:1px solid rgba(255,255,255,0.04);box-shadow:0 18px 50px rgba(0,0,0,0.6)}
 .intro-card{text-align:center;max-width:820px}
 .title{font-size:40px;color:var(--neon-b);text-shadow:0 8px 30px rgba(255,216,77,0.08)}
-.subtitle{color:var(--muted);margin-top:8px;margin-bottom:18px;font-size:18px}
+.subtitle{color:var(--muted);margin:8px 0 18px;font-size:18px}
 .hint{color:var(--muted);font-size:13px;margin-top:10px}
 
-/* buttons */
+/* Buttons */
 .btn{padding:12px 16px;border-radius:12px;border:0;font-weight:800;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.45)}
 .btn.primary{background:linear-gradient(90deg,var(--neon-b),#ffb84d);color:#061021}
 .btn.ghost{background:transparent;border:2px solid rgba(255,255,255,0.04);color:var(--muted)}
@@ -38,14 +36,14 @@ html,body{height:100%;margin:0;background:radial-gradient(circle at 10% 10%, rgb
 .overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:80}
 .lego-assembly{display:grid;grid-template-columns:repeat(16,14px);grid-auto-rows:14px;gap:2px}
 
-/* menu */
+/* menu grid */
 .menu-card{max-width:920px;text-align:center}
 .menu-title{font-size:20px;font-weight:900;letter-spacing:1px}
 .menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
 .menu-btn{padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03);cursor:pointer;transition:transform .15s}
 .menu-btn:hover{transform:translateY(-8px);box-shadow:0 18px 48px rgba(0,0,0,0.6)}
 
-/* select carousel */
+/* carousel */
 .select-card{max-width:1000px}
 .carousel-wrap{display:flex;align-items:center;gap:12px;margin-top:12px}
 .carousel{display:flex;gap:12px;overflow:hidden;padding:6px;align-items:center}
