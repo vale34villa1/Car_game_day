@@ -46,31 +46,21 @@ Abre en tu navegador:
 
 ```bash
 hotwheels-race/
-├─ README.md
 ├─ index.html
-├─ LICENSE
-├─ /css/
+├─ css/
 │   └─ style.css
-├─ /js/
+├─ js/
 │   └─ game.js
-├─ /assets/
-│   ├─ /images/
-│   │   ├─ logo.png
-│   │   ├─ cars/
-│   │   │   ├─ aurora.webp
-│   │   │   ├─ eclipse.webp
-│   │   │   ├─ phantom.webp
-│   │   │   └─ vortex.webp
-│   │   └─ bg-parallax-layer1.webp
-│   └─ /sounds/
-│       ├─ intro.mp3
-│       ├─ lego-crash.ogg
-│       ├─ select-engine-A.ogg
-│       ├─ select-engine-B.ogg
-│       ├─ select-engine-C.ogg
-│       ├─ race-loop.ogg
-│       ├─ beep.ogg
-│       └─ shot-start.ogg
+└─ assets/
+    ├─ images/
+    │   ├─ cars/ (4 coches: car1.png, car2.png, car3.png, car4.png)
+    │   └─ pista.png, fondo.png, logo.png
+    └─ sounds/
+        ├─ menu.mp3
+        ├─ race.mp3
+        ├─ click.ogg
+        ├─ start.ogg
+        └─ win.mp3
 
 ```
 ## 🎨 Créditos y recursos
