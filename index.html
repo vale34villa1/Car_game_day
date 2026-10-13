@@ -3,33 +3,965 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🚗 Hotwheels Arcade Race</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Hotwheels Space Arcade 360°</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Orbitron -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background-color: #020008;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s ease-in-out;
+    }
+    .screen.active {
+      display: flex;
+    }
+    .neon-glow-red {
+      text-shadow: 0 0 10px #ff0055, 0 0 20px #ff0055, 0 0 40px #ff0055;
+    }
+    .neon-glow-blue {
+      text-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff, 0 0 40px #00f0ff;
+    }
+    .neon-box {
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.3), inset 0 0 15px rgba(0, 240, 255, 0.15);
+    }
+    .arcade-btn {
+      background: linear-gradient(135deg, #ff0055 0%, #ff5500 100%);
+      box-shadow: 0 0 25px rgba(255, 0, 85, 0.6), 0 5px 0 #990033;
+      transition: all 0.1s ease;
+    }
+    .arcade-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 0 12px rgba(255, 0, 85, 0.6), 0 1px 0 #990033;
+    }
+    .control-btn {
+      background: rgba(15, 15, 30, 0.85);
+      border: 2px solid rgba(0, 240, 255, 0.6);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+      backdrop-filter: blur(8px);
+      transition: all 0.08s;
+    }
+    .control-btn:active, .control-btn.active {
+      background: rgba(0, 240, 255, 0.4);
+      box-shadow: 0 0 25px #00f0ff;
+      transform: scale(0.92);
+    }
+    .car-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 2px solid rgba(100, 116, 139, 0.4);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .car-card.selected {
+      border-color: #00f0ff;
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
+      transform: translateY(-4px);
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.85; filter: drop-shadow(0 0 15px #00f0ff); }
+      50% { opacity: 1; filter: drop-shadow(0 0 30px #ff0055); }
+    }
+    .pulsing-logo {
+      animation: pulseGlow 2.5s infinite ease-in-out;
+    }
+  </style>
 </head>
-<body>
-  <!-- Pantalla de inicio -->
-  <div id="menu" class="screen active">
-    <h1 class="title">🚗 Hotwheels Arcade Race</h1>
-    <button id="playBtn" class="btn">▶ Jugar</button>
-    <p class="credits">By Arcade Dev</p>
-  </div>
+<body class="w-screen h-screen m-0 p-0 text-white relative">
 
-  <!-- Pantalla del juego -->
-  <div id="game" class="screen">
-    <canvas id="gameCanvas"></canvas>
-    <div id="controls">
-      <button id="left">⬅️</button>
-      <button id="up">⬆️</button>
-      <button id="right">➡️</button>
+  <!-- Pantalla de Inicio & Selección de Vehículos -->
+  <div id="menu" class="screen active bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-950 via-purple-950 to-black z-20 overflow-y-auto py-6">
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f293715_1px,transparent_1px),linear-gradient(to_bottom,#1f293715_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none"></div>
+    
+    <div class="z-10 text-center px-4 max-w-3xl mx-auto flex flex-col items-center">
+      <div class="mb-3 pulsing-logo">
+        <i class="fa-solid fa-rocket text-5xl md:text-6xl text-cyan-400 neon-glow-blue inline-block transform -rotate-45"></i>
+        <i class="fa-solid fa-meteor text-4xl text-yellow-400 inline-block -ml-2"></i>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-black italic tracking-wider mb-1 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-yellow-400 neon-glow-red uppercase">
+        Hotwheels Space 360°
+      </h1>
+      <p class="text-cyan-300 text-xs md:text-sm tracking-widest uppercase mb-4 opacity-90">Carrera Cósmica & Exploración del Sistema Solar</p>
+      
+      <!-- Selector de Naves / Carros Espaciales -->
+      <div class="w-full mb-6">
+        <h3 class="text-yellow-400 font-bold mb-3 text-xs md:text-sm tracking-wider uppercase"><i class="fa-solid fa-space-shuttle mr-2"></i>Selecciona tu Nave Estelar:</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          
+          <!-- Nave 1 -->
+          <div class="car-card selected rounded-2xl p-4 text-left relative flex flex-col justify-between" data-car="interceptor">
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-cyan-400 font-bold text-sm">Solar Interceptor</span>
+                <i class="fa-solid fa-bolt text-cyan-400"></i>
+              </div>
+              <p class="text-gray-400 text-[11px] mb-3">Diseño equilibrado con excelente estabilidad en curvas y velocidad constante.</p>
+            </div>
+            <div class="space-y-1.5 text-[10px]">
+              <div>
+                <div class="flex justify-between text-gray-300 mb-0.5"><span>Velocidad</span><span>75%</span></div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-cyan-400 h-1.5 rounded-full" style="width: 75%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-gray-300 mb-0.5"><span>Manejo</span><span>85%</span></div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-cyan-400 h-1.5 rounded-full" style="width: 85%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nave 2 -->
+          <div class="car-card rounded-2xl p-4 text-left relative flex flex-col justify-between" data-car="nebula">
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-pink-400 font-bold text-sm">Nebula Racer</span>
+                <i class="fa-solid fa-wind text-pink-400"></i>
+              </div>
+              <p class="text-gray-400 text-[11px] mb-3">Ágil y ligera. Diseñada para giros cerrados y máxima maniobrabilidad galáctica.</p>
+            </div>
+            <div class="space-y-1.5 text-[10px]">
+              <div>
+                <div class="flex justify-between text-gray-300 mb-0.5"><span>Velocidad</span><span>65%</span></div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-pink-400 h-1.5 rounded-full" style="width: 65%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-gray-300 mb-0.5"><span>Manejo</span><span>95%</span></div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-pink-400 h-1.5 rounded-full" style="width: 95%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nave 3 -->
+          <div class="car-card rounded-2xl p-4 text-left relative flex flex-col justify-between" data-car="titan">
+            <div>
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-yellow-400 font-bold text-sm">Cosmic Titan</span>
+                <i class="fa-solid fa-fire-flame-curved text-yellow-400"></i>
+              </div>
+              <p class="text-gray-400 text-[11px] mb-3">Bestia pesada con aceleración brutal y velocidad punta estelar extrema.</p>
+            </div>
+            <div class="space-y-1.5 text-[10px]">
+              <div>
+                <div class="flex justify-between text-gray-300 mb-0.5"><span>Velocidad</span><span>98%</span></div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-yellow-400 h-1.5 rounded-full" style="width: 98%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-gray-300 mb-0.5"><span>Manejo</span><span>60%</span></div>
+                <div class="w-full bg-slate-800 rounded-full h-1.5"><div class="bg-yellow-400 h-1.5 rounded-full" style="width: 60%"></div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <button id="playBtn" class="arcade-btn text-white text-lg md:text-xl font-black px-10 py-3.5 rounded-full uppercase tracking-wider cursor-pointer transform hover:scale-105 active:scale-95 transition-all">
+        <i class="fa-solid fa-play mr-2"></i> Iniciar Misión Espacial
+      </button>
+      <p class="credits text-[11px] text-gray-500 mt-4 tracking-widest">By Arcade Dev &bull; Super Scaler Space Engine</p>
     </div>
   </div>
 
-  <!-- Pantalla de victoria -->
-  <div id="victory" class="screen">
-    <h2>🎉 ¡Feliz día Hotwheels! 🎉</h2>
-    <button id="restartBtn" class="btn">🔁 Jugar otra vez</button>
+  <!-- Pantalla del Juego -->
+  <div id="game" class="screen bg-neutral-950 z-10">
+    <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block"></canvas>
+    
+    <!-- HUD Superior -->
+    <div class="absolute top-3 left-4 right-4 flex flex-col md:flex-row justify-between items-center z-30 pointer-events-none gap-2 px-2">
+      <!-- Velocidad y Zona Cósmica -->
+      <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
+        <div class="bg-black/80 border border-cyan-500/50 rounded-xl px-3 py-1.5 backdrop-blur-md flex items-center space-x-2.5 shadow-lg">
+          <i class="fa-solid fa-gauge-high text-cyan-400 text-base"></i>
+          <div>
+            <div class="text-[9px] text-cyan-300 uppercase tracking-widest">Velocidad</div>
+            <div id="hudSpeed" class="text-lg font-bold font-mono text-white">0 <span class="text-[10px] text-cyan-400">KM/H</span></div>
+          </div>
+        </div>
+
+        <div class="bg-black/85 border border-purple-500/60 rounded-xl px-3 py-1.5 backdrop-blur-md flex items-center space-x-2.5 shadow-lg">
+          <i class="fa-solid fa-globe text-purple-400 text-base animate-spin" style="animation-duration: 8s;"></i>
+          <div>
+            <div class="text-[9px] text-purple-300 uppercase tracking-widest">Sector Actual</div>
+            <div id="hudZone" class="text-xs font-bold text-white uppercase tracking-wider">Tierra (Hogar)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progreso y Puntuación -->
+      <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-end">
+        <div class="bg-black/80 border border-yellow-500/50 rounded-xl px-3 py-1.5 backdrop-blur-md flex items-center space-x-2.5 shadow-lg">
+          <i class="fa-solid fa-star text-yellow-400 text-base"></i>
+          <div>
+            <div class="text-[9px] text-yellow-300 uppercase tracking-widest">Orbes Estelares</div>
+            <div id="hudOrbs" class="text-base font-bold font-mono text-yellow-400">0 / 10</div>
+          </div>
+        </div>
+
+        <div class="bg-black/80 border border-yellow-500/50 rounded-xl px-3.5 py-1.5 backdrop-blur-md flex items-center space-x-2.5 shadow-lg">
+          <i class="fa-solid fa-trophy text-yellow-400 text-base"></i>
+          <div>
+            <div class="text-[9px] text-yellow-300 uppercase tracking-widest">Misión Cósmica</div>
+            <div class="w-24 bg-gray-800 rounded-full h-2 mt-0.5 overflow-hidden border border-yellow-500/40">
+              <div id="hudProgress" class="bg-gradient-to-r from-yellow-500 to-pink-500 h-full w-0 transition-all duration-75"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Banner Educativo Flotante (Sistema Solar / Galaxias) -->
+    <div id="eduBanner" class="absolute top-20 left-1/2 transform -translate-x-1/2 bg-black/85 border border-cyan-400/50 rounded-2xl px-5 py-2.5 text-center max-w-lg w-11/12 z-30 backdrop-blur-md shadow-2xl transition-all duration-500 opacity-90 pointer-events-none">
+      <div class="text-[10px] text-cyan-300 font-mono tracking-widest uppercase mb-0.5"><i class="fa-solid fa-graduation-cap mr-1"></i> Exploración Astronómica</div>
+      <div id="eduText" class="text-xs md:text-sm font-bold text-yellow-300">¡Bienvenidos a la órbita terrestre! La Tierra es el único planeta conocido que alberga vida.</div>
+    </div>
+
+    <!-- Controles Táctiles Inferiores -->
+    <div id="controls" class="absolute bottom-6 left-0 right-0 flex justify-between items-center px-6 md:px-12 z-30 pointer-events-auto">
+      <div class="flex space-x-4">
+        <button id="left" class="control-btn w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center text-cyan-400 text-2xl md:text-3xl shadow-xl cursor-pointer">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <button id="right" class="control-btn w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center text-cyan-400 text-2xl md:text-3xl shadow-xl cursor-pointer">
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+      <div>
+        <button id="up" class="control-btn w-20 h-16 md:w-28 md:h-20 rounded-2xl flex items-center justify-center text-yellow-400 text-xl md:text-2xl font-black uppercase tracking-wider shadow-xl cursor-pointer">
+          <i class="fa-solid fa-bolt mr-1"></i> NITRO
+        </button>
+      </div>
+    </div>
   </div>
 
-  <script src="game.js"></script>
+  <!-- Pantalla de Victoria -->
+  <div id="victory" class="screen bg-black/95 backdrop-blur-lg z-30 overflow-y-auto py-6">
+    <div class="text-center px-4 max-w-lg mx-auto flex flex-col items-center">
+      <div class="mb-3 animate-bounce">
+        <i class="fa-solid fa-flag-checkered text-5xl md:text-6xl text-yellow-400 neon-glow-blue"></i>
+      </div>
+      <h2 class="text-2xl md:text-4xl font-black italic mb-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-500 to-cyan-400 uppercase">
+        ¡Galaxia Conquistada!
+      </h2>
+      <p class="text-gray-300 text-xs md:text-sm mb-4">Has surcado el Sistema Solar y alcanzado la Galaxia de Andrómeda.</p>
+      
+      <div class="bg-neutral-900 border border-cyan-500/30 rounded-2xl p-5 mb-6 w-full neon-box text-left">
+        <h4 class="text-yellow-400 font-bold text-xs uppercase mb-3 text-center"><i class="fa-solid fa-book-atlas mr-2"></i>Resumen de Conocimiento Cósmico</h4>
+        <ul class="space-y-2 text-xs text-gray-300 mb-4">
+          <li class="flex items-start"><i class="fa-solid fa-circle-check text-cyan-400 mt-0.5 mr-2"></i><span><strong>Marte:</strong> Conocido como el planeta rojo debido al óxido de hierro en su superficie.</span></li>
+          <li class="flex items-start"><i class="fa-solid fa-circle-check text-cyan-400 mt-0.5 mr-2"></i><span><strong>Saturno:</strong> Famoso por sus deslumbrantes anillos compuestos de hielo y rocas.</span></li>
+          <li class="flex items-start"><i class="fa-solid fa-circle-check text-cyan-400 mt-0.5 mr-2"></i><span><strong>Andrómeda:</strong> La gran galaxia espiral más cercana a nuestra Vía Láctea.</span></li>
+        </ul>
+        <div class="grid grid-cols-2 gap-3 text-center pt-2 border-t border-slate-800">
+          <div class="bg-black/50 p-2.5 rounded-xl border border-cyan-500/20">
+            <span class="text-[10px] text-gray-400 block mb-0.5">TIEMPO TOTAL</span>
+            <span id="statTime" class="text-lg md:text-xl font-mono text-cyan-400 font-bold">0.0s</span>
+          </div>
+          <div class="bg-black/50 p-2.5 rounded-xl border border-pink-500/20">
+            <span class="text-[10px] text-gray-400 block mb-0.5">ORBES RECOGIDOS</span>
+            <span id="statOrbs" class="text-lg md:text-xl font-mono text-yellow-400 font-bold">0 / 10</span>
+          </div>
+        </div>
+      </div>
+
+      <button id="restartBtn" class="arcade-btn text-white text-base md:text-lg font-black px-8 py-3.5 rounded-full uppercase tracking-wider cursor-pointer transform hover:scale-105 active:scale-95 transition-all">
+        <i class="fa-solid fa-rotate-right mr-2"></i> Nueva Exploración
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Sintetizador de Audio Web API profesional
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      }
+      playEngine(speed) {
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(45 + speed * 1.1, this.ctx.currentTime);
+          gain.gain.setValueAtTime(0.02, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.1);
+        } catch(e) {}
+      }
+      playNitro() {
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(140, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(420, this.ctx.currentTime + 0.25);
+          gain.gain.setValueAtTime(0.07, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.25);
+        } catch(e) {}
+      }
+      playCollect() {
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(587.33, this.ctx.currentTime); // D5
+          osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.18); // A5
+          gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.18);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.18);
+        } catch(e) {}
+      }
+      playCrash() {
+        if (!this.ctx) return;
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.setValueAtTime(80, this.ctx.currentTime);
+          osc.frequency.linearRampToValueAtTime(25, this.ctx.currentTime + 0.3);
+          gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.3);
+        } catch(e) {}
+      }
+      playZone() {
+        if (!this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          [330, 440, 550, 660].forEach((freq, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + i * 0.1);
+            gain.gain.setValueAtTime(0.08, now + i * 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.25);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + i * 0.1);
+            osc.stop(now + i * 0.1 + 0.25);
+          });
+        } catch(e) {}
+      }
+      playWin() {
+        if (!this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          [261.63, 329.63, 392.00, 523.25, 659.25].forEach((freq, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now + i * 0.12);
+            gain.gain.setValueAtTime(0.12, now + i * 0.12);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.35);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + i * 0.12);
+            osc.stop(now + i * 0.12 + 0.35);
+          });
+        } catch(e) {}
+      }
+    }
+
+    const soundMgr = new SoundManager();
+
+    // Referencias DOM
+    const menuScreen = document.getElementById('menu');
+    const gameScreen = document.getElementById('game');
+    const victoryScreen = document.getElementById('victory');
+    const playBtn = document.getElementById('playBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const hudSpeed = document.getElementById('hudSpeed');
+    const hudZone = document.getElementById('hudZone');
+    const hudOrbs = document.getElementById('hudOrbs');
+    const hudProgress = document.getElementById('hudProgress');
+    const eduBanner = document.getElementById('eduBanner');
+    const eduText = document.getElementById('eduText');
+    const statTime = document.getElementById('statTime');
+    const statOrbs = document.getElementById('statOrbs');
+
+    const btnLeft = document.getElementById('left');
+    const btnRight = document.getElementById('right');
+    const btnUp = document.getElementById('up');
+
+    // Selección de Vehículo
+    let selectedCarType = 'interceptor';
+    const carCards = document.querySelectorAll('.car-card');
+    carCards.forEach(card => {
+      card.addEventListener('click', () => {
+        carCards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedCarType = card.getAttribute('data-car');
+      });
+    });
+
+    // Parámetros de estadísticas de la nave elegida
+    const carStats = {
+      interceptor: { speedMult: 1.0, handling: 1.0, color: '#00f0ff', accent: '#ff0055' },
+      nebula:      { speedMult: 0.9, handling: 1.35, color: '#ec4899', accent: '#00f0ff' },
+      titan:       { speedMult: 1.22, handling: 0.8, color: '#eab308', accent: '#ef4444' }
+    };
+
+    // Variables de Juego & Pista 360° (Super Scaler)
+    let gameState = 'MENU';
+    let lastTime = 0;
+    let trackLength = 14000;
+    let position = 0;
+    let playerX = 0;
+    let speed = 0;
+    let maxSpeedAchieved = 0;
+    let startTime = 0;
+    let collectedOrbs = 0;
+    let totalOrbs = 10;
+    let centrifugal = 0;
+
+    // Segmentos y Zonas Educativas Espaciales
+    let segments = [];
+    const SEGMENT_LENGTH = 200;
+    const DRAW_DISTANCE = 320;
+    const FIELD_OF_VIEW = 100;
+    const CAMERA_HEIGHT = 1000;
+    const CAMERA_DEPTH = 0.84;
+
+    let obstacles = [];
+    let orbs = [];
+    let particles = [];
+    let stars = [];
+
+    // Fases / Zonas educativas del Sistema Solar y Galaxias
+    const cosmicZones = [
+      { start: 0, end: 2000, name: 'Tierra (Hogar)', info: '¡Bienvenidos a la órbita terrestre! La Tierra es el único planeta conocido que alberga vida y agua líquida.' },
+      { start: 2000, end: 4500, name: 'Marte (Planeta Rojo)', info: 'Marte posee el volcán más alto del sistema solar (Monte Olimpo) y su tono rojo se debe al óxido de hierro.' },
+      { start: 4500, end: 7000, name: 'Júpiter (Gigante Gaseoso)', info: 'Júpiter es el planeta más grande del sistema solar y cuenta con una gran tormenta llamada la Gran Mancha Roja.' },
+      { start: 7000, end: 9500, name: 'Saturn (Anillos de Hielo)', info: 'Saturno destaca por sus impresionantes anillos planetarios formados por miles de millones de partículas de hielo.' },
+      { start: 9500, end: 11800, name: 'Cinturón de Asteroides', info: 'Región cósmica situada entre Marte y Júpiter repleta de rocas espaciales remanentes de la formación planetaria.' },
+      { start: 11800, end: 14000, name: 'Galaxia de Andrómeda', info: '¡Has cruzado al espacio profundo! Andrómeda es la gran galaxia espiral más cercana a nuestra Vía Láctea.' }
+    ];
+    let currentZoneIndex = -1;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initStars();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function initStars() {
+      stars = [];
+      for (let i = 0; i < 220; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * 2.2 + 0.5,
+          alpha: Math.random() * 0.8 + 0.2
+        });
+      }
+    }
+    resizeCanvas();
+
+    // Controles teclado
+    const keys = { left: false, right: false, up: false };
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = true;
+      if (e.key === 'ArrowRight' || e.key === 'd') keys.right = true;
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'z' || e.key === ' ') keys.up = true;
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = false;
+      if (e.key === 'ArrowRight' || e.key === 'd') keys.right = false;
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'z' || e.key === ' ') keys.up = false;
+    });
+
+    // Control táctil
+    function bindButton(btn, keyName) {
+      const press = (e) => { e.preventDefault(); keys[keyName] = true; btn.classList.add('active'); };
+      const release = (e) => { e.preventDefault(); keys[keyName] = false; btn.classList.remove('active'); };
+      btn.addEventListener('mousedown', press);
+      btn.addEventListener('mouseup', release);
+      btn.addEventListener('mouseleave', release);
+      btn.addEventListener('touchstart', press, { passive: false });
+      btn.addEventListener('touchend', release, { passive: false });
+    }
+
+    bindButton(btnLeft, 'left');
+    bindButton(btnRight, 'right');
+    bindButton(btnUp, 'up');
+
+    playBtn.addEventListener('click', () => {
+      soundMgr.init();
+      menuScreen.classList.remove('active');
+      gameScreen.classList.add('active');
+      initGame();
+    });
+
+    restartBtn.addEventListener('click', () => {
+      victoryScreen.classList.remove('active');
+      menuScreen.classList.add('active');
+    });
+
+    function buildTrack() {
+      segments = [];
+      obstacles = [];
+      orbs = [];
+
+      let n = 0;
+      for (let i = 0; i < trackLength / SEGMENT_LENGTH; i++) {
+        let curve = 0;
+        let hill = 0;
+        let colorType = Math.floor(i / 3) % 2;
+
+        if (i > 12 && i < 38) curve = 2.5;
+        else if (i >= 38 && i < 68) curve = -3.2;
+        else if (i >= 78 && i < 112) { curve = 3.8; hill = Math.sin(i * 0.22) * 45; }
+        else if (i >= 120 && i < 155) curve = -3.5;
+        else if (i >= 170 && i < 210) { curve = 2.5; hill = Math.cos(i * 0.18) * 55; }
+        else if (i >= 220 && i < 265) curve = -4.0;
+
+        segments.push({
+          index: i,
+          p1: { world: { x: 0, y: hill, z: i * SEGMENT_LENGTH }, screen: {} },
+          p2: { world: { x: 0, y: hill, z: (i + 1) * SEGMENT_LENGTH }, screen: {} },
+          curve: curve,
+          color: colorType === 0 ? { road: '#15102b', space: '#02000c', rumble: '#ff0055', lane: '#00f0ff' } : { road: '#1d1538', space: '#050114', rumble: '#eab308', lane: '#ffffff' }
+        });
+
+        // Obstáculos (Meteoritos / Basura espacial)
+        if (i > 8 && i < (trackLength / SEGMENT_LENGTH) - 8 && i % 7 === 0) {
+          obstacles.push({
+            segment: i,
+            offset: (Math.random() < 0.5 ? -1 : 1) * (0.42 + Math.random() * 0.38)
+          });
+        }
+
+        // Orbes de energía estelar
+        if (i > 5 && i < (trackLength / SEGMENT_LENGTH) - 5 && i % 5 === 0) {
+          orbs.push({
+            segment: i,
+            offset: (Math.random() - 0.5) * 0.7,
+            collected: false
+          });
+        }
+      }
+    }
+
+    function initGame() {
+      gameState = 'PLAYING';
+      position = 0;
+      speed = 0;
+      maxSpeedAchieved = 0;
+      playerX = 0;
+      collectedOrbs = 0;
+      currentZoneIndex = -1;
+      startTime = performance.now();
+      particles = [];
+      buildTrack();
+      updateZone(0);
+    }
+
+    function addParticles(x, y, count, color) {
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: x + (Math.random() - 0.5) * 45,
+          y: y + (Math.random() - 0.5) * 45,
+          vx: (Math.random() - 0.5) * 9,
+          vy: Math.random() * 6 + 2,
+          size: Math.random() * 5 + 2,
+          color: color,
+          alpha: 1
+        });
+      }
+    }
+
+    requestAnimationFrame(gameLoop);
+
+    function gameLoop(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const dt = Math.min((timestamp - lastTime) / 1000, 0.1);
+      lastTime = timestamp;
+
+      if (gameState === 'PLAYING') {
+        update(dt);
+        render();
+      }
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    function updateZone(posZ) {
+      let zone = cosmicZones.find(z => posZ >= z.start && posZ < z.end);
+      if (zone) {
+        let index = cosmicZones.indexOf(zone);
+        if (index !== currentZoneIndex) {
+          currentZoneIndex = index;
+          hudZone.textContent = zone.name;
+          eduText.textContent = zone.info;
+          eduBanner.style.opacity = '1';
+          soundMgr.playZone();
+          setTimeout(() => {
+            eduBanner.style.opacity = '0.85';
+          }, 4500);
+        }
+      }
+    }
+
+    function update(dt) {
+      let stats = carStats[selectedCarType];
+      let acceleration = 60 * stats.speedMult;
+      let maxCap = 250 * stats.speedMult;
+      let nitroActive = keys.up;
+
+      if (nitroActive) {
+        acceleration = 130 * stats.speedMult;
+        maxCap = 360 * stats.speedMult;
+        if (Math.random() < 0.6) {
+          addParticles(canvas.width / 2 + playerX * 180, canvas.height - 150, 2, stats.color);
+        }
+        soundMgr.playNitro();
+      } else {
+        if (speed < maxCap) speed += acceleration * dt;
+      }
+
+      if (nitroActive && speed < maxCap) {
+        speed += (acceleration * 1.5) * dt;
+      } else if (!nitroActive && speed > 10) {
+        speed -= 35 * dt;
+      }
+
+      if (speed < 0) speed = 0;
+      if (speed > maxCap) speed = maxCap;
+
+      if (speed > maxSpeedAchieved) maxSpeedAchieved = Math.floor(speed);
+
+      let currentSegmentIndex = Math.floor(position / SEGMENT_LENGTH) % segments.length;
+      let currentSegment = segments[currentSegmentIndex];
+
+      centrifugal = currentSegment.curve * (speed / maxCap) * 1.9;
+
+      let steerSpeed = 2.8 * stats.handling;
+      if (keys.left) playerX -= steerSpeed * dt;
+      if (keys.right) playerX += steerSpeed * dt;
+
+      playerX -= centrifugal * dt;
+      playerX = Math.max(-0.92, Math.min(0.92, playerX));
+
+      position += (speed / 3.6) * dt * 35;
+      updateZone(position);
+
+      if (Math.random() < 0.25 && speed > 25) {
+        soundMgr.playEngine(speed);
+      }
+
+      // Colisiones con obstáculos (meteoritos)
+      obstacles.forEach(obs => {
+        let obsZ = obs.segment * SEGMENT_LENGTH;
+        if (Math.abs(position - obsZ) < 300) {
+          if (Math.abs(playerX - obs.offset) < 0.38) {
+            speed = Math.max(25, speed * 0.42);
+            addParticles(canvas.width / 2 + playerX * 200, canvas.height - 180, 18, '#ff0055');
+            soundMgr.playCrash();
+            obs.segment -= 120;
+          }
+        }
+      });
+
+      // Recolección de Orbes Estelares
+      orbs.forEach(orb => {
+        if (!orb.collected) {
+          let orbZ = orb.segment * SEGMENT_LENGTH;
+          if (Math.abs(position - orbZ) < 250) {
+            if (Math.abs(playerX - orb.offset) < 0.4) {
+              orb.collected = true;
+              collectedOrbs++;
+              hudOrbs.textContent = collectedOrbs + ' / ' + totalOrbs;
+              addParticles(canvas.width / 2 + playerX * 200, canvas.height - 180, 15, '#eab308');
+              soundMgr.playCollect();
+            }
+          }
+        }
+      });
+
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= 0.035;
+      });
+      particles = particles.filter(p => p.alpha > 0);
+
+      // Victoria
+      if (position >= trackLength) {
+        gameState = 'VICTORY';
+        let totalTime = ((performance.now() - startTime) / 1000).toFixed(1);
+        soundMgr.playWin();
+        statTime.textContent = totalTime + 's';
+        statOrbs.textContent = collectedOrbs + ' / ' + totalOrbs;
+        gameScreen.classList.remove('active');
+        victoryScreen.classList.add('active');
+      }
+
+      // HUD actualización
+      hudSpeed.innerHTML = Math.floor(speed) + ' <span class="text-[10px] text-cyan-400">KM/H</span>';
+      let progressPercent = Math.min(100, (position / trackLength) * 100);
+      hudProgress.style.width = progressPercent + '%';
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      let width = canvas.width;
+      let height = canvas.height;
+      let cx = width / 2;
+      let cy = height / 2;
+
+      let currentSegmentIndex = Math.floor(position / SEGMENT_LENGTH) % segments.length;
+      let currentSegment = segments[currentSegmentIndex];
+      let basePercent = (position % SEGMENT_LENGTH) / SEGMENT_LENGTH;
+
+      // 1. Cielo espacial con estrellas titilantes
+      let skyGradient = ctx.createLinearGradient(0, 0, 0, cy);
+      skyGradient.addColorStop(0, '#010008');
+      skyGradient.addColorStop(0.6, '#0b0224');
+      skyGradient.addColorStop(1, '#24034a');
+      ctx.fillStyle = skyGradient;
+      ctx.fillRect(0, 0, width, cy);
+
+      // Estrellas de fondo
+      stars.forEach(s => {
+        ctx.fillStyle = '#ffffff';
+        ctx.globalAlpha = s.alpha;
+        ctx.fillRect(s.x, s.y, s.size, s.size);
+      });
+      ctx.globalAlpha = 1.0;
+
+      // Línea de horizonte neón galáctico
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 3;
+      ctx.shadowColor = '#00f0ff';
+      ctx.shadowBlur = 20;
+      ctx.beginPath();
+      ctx.moveTo(0, cy - currentSegment.curve * 15);
+      ctx.lineTo(width, cy + currentSegment.curve * 15);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // 2. Renderizado de Segmentos de Pista (Super Scaler)
+      let maxy = cy;
+      let x = 0;
+      let dx = -(currentSegment.curve * basePercent);
+
+      for (let n = 0; n < DRAW_DISTANCE; n++) {
+        let index = (currentSegmentIndex + n) % segments.length;
+        let seg = segments[index];
+
+        let looped = index < currentSegmentIndex;
+        let z = (index * SEGMENT_LENGTH) - position + (looped ? trackLength : 0);
+
+        let p1 = project(0, CAMERA_HEIGHT + seg.p1.world.y, z, cx, cy, width, height, playerX * 1500 - x);
+        let p2 = project(0, CAMERA_HEIGHT + seg.p2.world.y, z + SEGMENT_LENGTH, cx, cy, width, height, playerX * 1500 - (x + dx));
+
+        x += dx;
+        dx += seg.curve;
+
+        if (p1.z <= CAMERA_DEPTH || p2.z <= CAMERA_DEPTH || p1.y >= maxy) continue;
+
+        renderSegment(
+          width,
+          p1.x, p1.y, p1.w,
+          p2.x, p2.y, p2.w,
+          seg.color
+        );
+
+        maxy = p1.y;
+      }
+
+      // 3. Renderizar Obstáculos (Meteoritos)
+      obstacles.forEach(obs => {
+        let obsZ = obs.segment * SEGMENT_LENGTH;
+        let relZ = obsZ - position;
+        if (relZ > 0 && relZ < DRAW_DISTANCE * SEGMENT_LENGTH) {
+          let p = project(obs.offset * 1800, CAMERA_HEIGHT, relZ, cx, cy, width, height, playerX * 1500);
+          if (p.z > CAMERA_DEPTH && p.y < height) {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            let scale = Math.max(0.1, p.scale * 1.5);
+            ctx.scale(scale, scale);
+
+            // Meteorito rocoso con brillo rojo
+            ctx.fillStyle = '#b45309';
+            ctx.shadowColor = '#ef4444';
+            ctx.shadowBlur = 15;
+            ctx.beginPath();
+            ctx.arc(0, 0, 30, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#78350f';
+            ctx.beginPath();
+            ctx.arc(-8, -8, 10, 0, Math.PI * 2);
+            ctx.arc(10, 8, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+          }
+        }
+      });
+
+      // 4. Renderizar Orbes Estelares Coleccionables
+      orbs.forEach(orb => {
+        if (!orb.collected) {
+          let orbZ = orb.segment * SEGMENT_LENGTH;
+          let relZ = orbZ - position;
+          if (relZ > 0 && relZ < DRAW_DISTANCE * SEGMENT_LENGTH) {
+            let p = project(orb.offset * 1800, CAMERA_HEIGHT, relZ, cx, cy, width, height, playerX * 1500);
+            if (p.z > CAMERA_DEPTH && p.y < height) {
+              ctx.save();
+              ctx.translate(p.x, p.y);
+              let scale = Math.max(0.1, p.scale * 1.4);
+              ctx.scale(scale, scale);
+
+              ctx.fillStyle = '#facc15';
+              ctx.shadowColor = '#facc15';
+              ctx.shadowBlur = 20;
+              ctx.beginPath();
+              ctx.arc(0, 0, 18, 0, Math.PI * 2);
+              ctx.fill();
+              ctx.fillStyle = '#ffffff';
+              ctx.beginPath();
+              ctx.arc(0, 0, 8, 0, Math.PI * 2);
+              ctx.fill();
+
+              ctx.restore();
+            }
+          }
+        }
+      });
+
+      // 5. Renderizar Nave Espacial / Carro seleccionado
+      let carScreenX = cx + (playerX * 80);
+      let carScreenY = height - 130;
+      let stats = carStats[selectedCarType];
+
+      ctx.save();
+      ctx.translate(carScreenX, carScreenY);
+      let tilt = -playerX * 0.35 + currentSegment.curve * 0.1;
+      ctx.rotate(tilt);
+
+      ctx.shadowColor = stats.color;
+      ctx.shadowBlur = 30;
+
+      // Chasis de la nave
+      ctx.fillStyle = stats.accent;
+      ctx.beginPath();
+      ctx.roundRect(-26, -48, 52, 96, 14);
+      ctx.fill();
+
+      // Cabina / Núcleo de energía
+      ctx.fillStyle = stats.color;
+      ctx.fillRect(-18, -16, 36, 30);
+
+      // Rayas estelares
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(-6, -48, 12, 96);
+
+      // Propulsores laterales
+      ctx.fillStyle = '#111111';
+      ctx.fillRect(-32, -30, 10, 26);
+      ctx.fillRect(22, -30, 10, 26);
+      ctx.fillRect(-32, 16, 10, 26);
+      ctx.fillRect(22, 16, 10, 26);
+
+      ctx.restore();
+
+      // Partículas
+      particles.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+      });
+    }
+
+    function project(worldX, worldY, worldZ, cameraX, cameraY, screenWidth, screenHeight, offsetX) {
+      let focalLength = 300;
+      let scale = focalLength / (worldZ === 0 ? 0.0001 : worldZ);
+      let x = (screenWidth / 2) + scale * (worldX - offsetX);
+      let y = (screenHeight / 2) + scale * (-worldY);
+      let w = scale * 1800;
+      return { x: x, y: y, w: w, scale: scale, z: worldZ };
+    }
+
+    function renderSegment(width, x1, y1, w1, x2, y2, w2, color) {
+      let r1 = w1 / 6;
+      let r2 = w2 / 6;
+      let l1 = w1 / 2;
+      let l2 = w2 / 2;
+
+      // Espacio profundo lateral
+      ctx.fillStyle = color.space;
+      ctx.fillRect(0, y2, width, y1 - y2);
+
+      // Pista cósmica
+      ctx.fillStyle = color.road;
+      ctx.beginPath();
+      ctx.moveTo(x1 - l1, y1);
+      ctx.lineTo(x1 + l1, y1);
+      ctx.lineTo(x2 + l2, y2);
+      ctx.lineTo(x2 - l2, y2);
+      ctx.closePath();
+      ctx.fill();
+
+      // Bordillos neón
+      ctx.fillStyle = color.rumble;
+      ctx.beginPath();
+      ctx.moveTo(x1 - l1 - r1, y1);
+      ctx.lineTo(x1 - l1, y1);
+      ctx.lineTo(x2 - l2, y2);
+      ctx.lineTo(x2 - l2 - r2, y2);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(x1 + l1, y1);
+      ctx.lineTo(x1 + l1 + r1, y1);
+      ctx.lineTo(x2 + l2 + r2, y2);
+      ctx.lineTo(x2 + l2, y2);
+      ctx.closePath();
+      ctx.fill();
+    }
+  </script>
 </body>
 </html>
