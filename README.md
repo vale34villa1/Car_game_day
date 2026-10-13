@@ -1,59 +1,60 @@
-# 🚗 Hotwheels Arcade Race
+# 🚗 Cosmic Hotwheels Arcade Race
 
-Un juego de carreras arcade creado con **HTML, CSS y JavaScript** con un diseño profesional y efectos visuales únicos.  
-El objetivo es elegir tu coche de lujo, competir en la pista evitando obstáculos y lograr el primer lugar.  
-Al ganar, el juego celebra con el mensaje especial: **"Feliz día Hotwheels"**. 🎉
-
----
-
-## ✨ Características principales
-- Intro arcade con animación y menú interactivo.
-- Selección de 4 modelos de coches de lujo con un **carrusel 3D**.
-- Pista de carrera con efecto **parallax** y obstáculos dinámicos.
-- Cuenta regresiva (3...2...1 🔫) antes de iniciar la carrera.
-- **Música personalizada**: intro, motor, choque y música de carrera.
-- IA rival para competir en tiempo real.
-- **Sistema de récords** almacenado en el navegador (localStorage).
-- Totalmente **responsive** (teclado y controles táctiles para móviles).
-- Animaciones inspiradas en estilo arcade / lego.
+An immersive, high-speed 360° pseudo-3D arcade racing game built **HTML, CSS, and JavaScript**, featuring a professional design and unique visual effects.  
+The goal is to choose your luxury car, race around the track while avoiding obstacles, and finish in first place.  
+When you win, the game celebrates with a special message: **“Happy Hot Wheels Day”**. 🎉
 
 ---
 
-## 🚀 Instalación y uso
+## ✨ Key Features
+- Arcade-style intro with animation and an interactive menu.
+- **360° Super Scaler Engine:** Pseudo-3D curved road geometry with dynamic centrifugal force, elevation shifts, and parallax backgrounds.
+- Choose from 4 luxury car models using a **3D carousel**.
+- Race track with **parallax** effects and dynamic obstacles.
+- Countdown (3...2...1 🔫) before the race starts.
+- **Custom music**: intro, engine, crash, and race music.
+- Opponent AI for real-time competition.
+- **High score system** stored in the browser (localStorage).
+- Fully **responsive** (keyboard and touch controls for mobile devices).
+- Animations inspired by arcade and LEGO styles.
 
-Clona el repositorio:
+---
+
+## 🚀 Installation and Usage
+
+Clone the repository:
 ```bash
 git clone https://github.com/TU_USUARIO/hotwheels-race.git
 cd hotwheels-race
 ```
-Abre un servidor local para probar:
+Start a local server to test:
 
-Con Python:
+With Python:
 ```bash
 python -m http.server xxxx
 ```
 
-Con Node.js:
+With Node.js:
 ```bash
 npx http-server -p xxxx
 ```
 
-Abre en tu navegador:
+Open in your browser:
 👉 http://localhost:xxxx
 
 ---
 
-## 🛠️ Tecnologías usadas
+## 🛠️ Technologies Used
 
-- HTML5 (estructura y canvas del juego)
+- HTML5 (game structure and canvas)
 
-- CSS3 (efectos neón, IU/UX arcade, animaciones)
+- CSS3 (neon effects, arcade UI/UX, animations)
 
-- JavaScript (ES6) (motor del juego, IA rival, almacenamiento de récords)
+- JavaScript (ES6) (game engine, opponent AI, high score storage)
 
 ---
 
-## 📂 Estructura del proyecto
+## 📂 Project Structure
 
 ```bash
 hotwheels-race/
@@ -64,7 +65,7 @@ hotwheels-race/
 │   └─ game.js
 └─ assets/
     ├─ images/
-    │   ├─ cars/ (4 coches: car1.png, car2.png, car3.png, car4.png)
+    │   ├─ cars/ (4 cars: car1.png, car2.png, car3.png, car4.png)
     │   └─ pista.png, fondo.png, logo.png
     └─ sounds/
         ├─ menu.mp3
@@ -74,10 +75,15 @@ hotwheels-race/
         └─ win.mp3
 
 ```
-## 🎨 Créditos y recursos
+## 🎨 Credits & Resources
+**- SFX & Audio:** Mixkit, Pixabay SFX & Web Audio API synthesizers.
 
-- Sonidos: Mixkit, Pixabay SFX y Google Actions.
+**- Visual Assets:** Unsplash, Pexels & custom canvas procedural art.
 
-- Imágenes: Unsplash y Pexels.
+**- Typography:** Google Fonts (Orbitron).
 
-- Fuentes: Google Fonts, Orbitron.
+**- Development Support:** Powered & optimized with Gemini AI.
+
+**- Fonts:** Google Fonts, Orbitron.
+
+**- Important:** Hotwheels with this special day to create new cars to forward the path.
